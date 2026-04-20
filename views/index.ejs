@@ -1,5 +1,16 @@
-<%- include("partials/header",{tituloWeb: "Principal"}) %>
-    <h1>Sitio web con EJS</h1>
-    <h2><%= titulo %></h2>
+<%- include("partials/header",{tituloWeb: "Inicio"}) %>
+     <main style="text-align:center; padding: 40px;">
+        <h1>Gestión de Mascotas</h1>
+        <p style="max-width:600px; margin: 20px auto;">
+            Bienvenido al sistema de gestión de mascotas. Aquí puedes registrar, 
+            visualizar, editar y eliminar información de tus mascotas de forma sencilla.
+        </p>
+
+        <img 
+            src="/assets/pets.jpg" 
+            alt="Mascotas" 
+            style="width:600px; border-radius:10px; margin-top:20px;"
+        >
+    </main>
 
 <%- include("partials/footer") %>

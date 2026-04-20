@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
       arrayMascotas: arrayMascotasDB,
     });
 
-    console.log(arrayMascotasDB);
+    //console.log(arrayMascotasDB);
   } catch (error) {
     console.log(error);
   }
@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = req.params.id; // leer id desde url
   const mascotaDB = await Mascota.findByIdAndDelete({ _id: id });
 
