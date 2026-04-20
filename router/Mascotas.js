@@ -3,6 +3,23 @@ const router = express.Router();
 
 const Mascota = require("../models/mascota");
 
+//CREATE
+// render pagina crear
+router.get("/crear", async (req, res) => {
+  res.render("crear");
+});
+
+// crear en BD
+router.post("/", async (req, res) => {
+  const body = req.body;
+  try {
+    await Mascota.create(body);
+    res.redirect("/mascotas");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // READ - read all (table)
 router.get("/", async (req, res) => {
   try {
@@ -36,23 +53,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//CREATE
-// render pagina crear
-router.get("/crear", async (req, res) => {
-  res.render("crear");
-});
-
-// crear en BD
-router.post("/", async (req, res) => {
-  const body = req.body;
-  try {
-    await Mascota.create(body);
-    res.redirect("/mascotas");
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 router.delete("/:id", async (req, res) => {
   const id = req.params.id; // leer id desde url
   const mascotaDB = await Mascota.findByIdAndDelete({ _id: id });
@@ -65,12 +65,34 @@ router.delete("/:id", async (req, res) => {
   } else {
     res.json({
       estado: "false",
-      mensaje: "fallo eliminar",
+      mensaje: "fallo al eliminar",
     });
   }
   try {
   } catch (error) {
     console.log(error);
+  }
+});
+
+// update - edit
+router.put("/:id", async (req, res) => {
+  const id = req.params.id; // leer id desde url
+  const body = req.body;
+  try {
+    const mascotaDB = await Mascota.findByIdAndUpdate(id, body, {
+      useFindAndModify: false,
+    });
+
+    res.json({
+      estado: "true",
+      mensaje: "modificado",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      estado: "false",
+      mensaje: "fallo al modificar",
+    });
   }
 });
 
