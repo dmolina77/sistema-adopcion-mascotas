@@ -1,0 +1,52 @@
+<%- include("partials/header", {tituloWeb: "Detalle de mascota" }) %>
+
+    <div class="container">
+        <h1> Detalle Mascota </h1>
+        <% if (error) { %>
+            <p>
+                <%= mensaje %>
+            </p>
+            <a href="/mascotas" class="btn btn-dark w-100">Volver a Mascotas</a>
+            <% } %>
+
+                <% if (!error) { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">
+                                    <%= mascota.id %>
+                                </td>
+                                <td>
+                                    <%= mascota.nombre %>
+                                </td>
+                                <td>
+                                    <%= mascota.descripcion %>
+                                </td>
+                                <th>
+                                    <button type="button" class="btn btn-warning btn-sm">Modificar</button>
+                                    <button type="button" class="btn btn-danger btn-sm">Eliminar</button>
+                                </th>
+
+
+
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <% } %>
+
+    </div>
+
+
+
+
+
+    <%- include("partials/footer") %>

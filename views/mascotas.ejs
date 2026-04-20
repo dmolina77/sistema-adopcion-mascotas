@@ -1,0 +1,61 @@
+<%- include("partials/header",{tituloWeb: "Principal" }) %>
+
+
+
+
+  <div class="container">
+    <h1>CRUD MongoDB</h1>
+    <div>
+      <a href="/mascotas/crear" class="btn btn-success my-4 float-end">
+        Agregar Mascota
+      </a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% if (arrayMascotas.length> 0) { %>
+          <% arrayMascotas.forEach(element=> { %>
+
+            <tr>
+
+              <td scope="row">
+                <%= element.id %>
+              </td>
+              <td>
+                <%= element.nombre %>
+              </td>
+              <td>
+                <%= element.descripcion %>
+              </td>
+              <th>
+                
+                <a class="btn btn-info btn-sm" href="/mascotas/<%= element.id %>">Ver</a>
+                <a class="btn btn-warning btn-sm" href="#" >>Modificar</a>
+                <a class="btn btn-danger btn-sm" href="#" >>Eliminar</a>
+                
+                
+
+              </th>
+
+              <% }) %>
+                <% } %>
+
+
+
+            </tr>
+      </tbody>
+    </table>
+
+
+
+  </div>
+
+  <%- include("partials/footer") %>

@@ -1,0 +1,30 @@
+<%- include("partials/header", {tituloWeb: "Crear nueva mascota" }) %>
+
+
+
+  <div class="container">
+    <h1> Crear </h1>
+    <form action="/mascotas" method="POST" class="mb-3">
+      <input 
+      type="text" 
+      class="form-control my-4" 
+      placeholder="Nombre de la mascota"
+      name="nombre"
+      >
+      <textarea 
+      class="form-control my-4" 
+      rows="2" 
+      placeholder="Descripción de la mascota"
+      name="descripcion"  
+      ></textarea>
+      <button type="submit" class="btn btn-success w-100">Enviar</button>
+    </form>
+    
+
+  </div>
+
+
+
+
+
+  <%- include("partials/footer") %>
