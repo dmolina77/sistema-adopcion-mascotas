@@ -10,25 +10,36 @@ router.get("/crear", async (req, res) => {
 });
 
 // crear en BD
+// validación de datos para formulario
 router.post("/", async (req, res) => {
-  const body = req.body;
+  const { nombre, descripcion } = req.body;
+
+  if (!nombre || nombre.trim() === "") {
+    return res.redirect("/mascotas/crear?error=nombre_requerido");
+  }
+  if (nombre.trim().length > 50) {
+    return res.redirect("/mascotas/crear?error=nombre_largo");
+  }
+
   try {
-    await Mascota.create(body);
+    await Mascota.create({
+      nombre: nombre.trim(),
+      descripcion: descripcion ? descripcion.trim().substring(0, 200) : "",
+    });
     res.redirect("/mascotas");
   } catch (error) {
-    console.log(error);
+    console.error("Error al crear mascota:", error.message);
+    res.redirect("/mascotas/crear?error=servidor");
   }
 });
 
-// READ - read all (table)
+// READ - read all
 router.get("/", async (req, res) => {
   try {
     arrayMascotasDB = await Mascota.find();
     res.render("mascotas", {
       arrayMascotas: arrayMascotasDB,
     });
-
-    //console.log(arrayMascotasDB);
   } catch (error) {
     console.log(error);
   }
@@ -53,11 +64,11 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//delete
 router.delete("/:id", async (req, res) => {
   const id = req.params.id; // leer id desde url
   try {
     const mascotaDB = await Mascota.findByIdAndDelete({ _id: id });
-
     if (mascotaDB) {
       res.json({
         estado: "true",

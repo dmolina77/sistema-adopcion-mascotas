@@ -1,27 +1,46 @@
 <%- include("partials/header", {tituloWeb: "Crear nueva mascota" }) %>
 
 
+  <div class='container' style='max-width:600px; margin-top:40px;'>
+  <h1>Registrar Nueva Mascota</h1>
 
-  <div class="container">
-    <h1> Crear </h1>
-    <form action="/mascotas" method="POST" class="mb-3">
-      <input 
-      type="text" 
-      class="form-control my-4" 
-      placeholder="Nombre de la mascota"
-      name="nombre"
-      >
-      <textarea 
-      class="form-control my-4" 
-      rows="2" 
-      placeholder="Descripción de la mascota"
-      name="descripcion"  
-      ></textarea>
-      <button type="submit" class="btn btn-success w-100">Enviar</button>
-    </form>
-    
+  <% if (locals.query && query.error) { %>
+    <div class='alert alert-danger' role='alert'>
+      <% if (query.error === 'nombre_requerido') { %>
+        El nombre de la mascota es obligatorio.
+      <% } else { %>
+        Ocurrioun error. Por favor intenta nuevamente.
+      <% } %>
+    </div>
+  <% } %>
 
-  </div>
+  <form action='/mascotas' method='POST' novalidate>
+    <div class='mb-3'>
+      <label for='nombre' class='form-label fw-bold'>
+        Nombre de la mascota <span class='text-danger'>*</span>
+      </label>
+      <input type='text' class='form-control' id='nombre' name='nombre'
+             required minlength='2' maxlength='50'
+             placeholder='Ej: Firulais, Luna, Michi...'
+             aria-describedby='nombreAyuda'>
+      <div id='nombreAyuda' class='form-text'>
+        Entre 2 y 50 caracteres. Campo obligatorio.
+      </div>
+    </div>
+    <div class='mb-3'>
+      <label for='descripcion' class='form-label fw-bold'>Descripcion</label>
+      <textarea class='form-control' id='descripcion' name='descripcion'
+                rows='3' maxlength='200'
+                placeholder='Ej: Perro jugueton de 2 años...'
+                aria-describedby='descAyuda'></textarea>
+      <div id='descAyuda' class='form-text'>Maximo 200 caracteres. Opcional.</div>
+    </div>
+    <button type='submit' class='btn btn-success w-100'>Registrar Mascota</button>
+
+        <a href='/mascotas' class='btn btn-outline-secondary w-100 mt-2'>Cancelar</a>
+  </form>
+</div>
+
 
 
 
