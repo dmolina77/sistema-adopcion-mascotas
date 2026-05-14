@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 //const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo").default || require("connect-mongo");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 require("dotenv").config();
@@ -47,26 +48,26 @@ app.use(express.static(__dirname + "/public", { maxAge: "7d" }));
 // sesion almacenada con mongo
 app.set("trust proxy", 1);
 
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     store: MongoStore.create({ mongoUrl: uri }),
-//     cookie: {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production", //agrega http en produccion/deploy
-//       sameSite: "lax",
-//       maxAge: 1000 * 60 * 60 * 24, // 24 horas
-//     },
-//   }),
-// );
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: uri }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", //agrega http en produccion/deploy
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24, // 24 horas
+    },
+  }),
+);
 
 // usuario global, disponible en todas las vistas
-// app.use((req, res, next) => {
-//   res.locals.usuarioActivo = req.session.usuario || null;
-//   next();
-// });
+app.use((req, res, next) => {
+  res.locals.usuarioActivo = req.session.usuario || null;
+  next();
+});
 
 // motor plantillas
 app.set("view engine", "ejs");
@@ -74,7 +75,7 @@ app.set("views", __dirname + "/views");
 
 // rutas web
 app.use("/", require("./router/RutasWeb"));
-//app.use("/auth", require("./router/Auth")); // ruta auth
+app.use("/auth", require("./router/Auth")); // ruta auth
 app.use("/mascotas", require("./router/Mascotas")); //ruta CRUD
 // error 404
 app.use((req, res, next) => {

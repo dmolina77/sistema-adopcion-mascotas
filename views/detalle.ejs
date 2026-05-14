@@ -1,131 +1,145 @@
-<%- include("partials/header", {tituloWeb: "Datos de mascota" }) %>
+<%- include("partials/header", {tituloWeb: "Detalle de mascota"}) %>
 
-    <div class="container">
-        <h1> Datos de Mascota </h1>
-        <% if (error) { %>
-            <p>
-                <%= mensaje %>
-            </p>
-            <a href="/mascotas" class="btn btn-dark w-100">Volver a Mascotas</a>
-            <% } %>
+<main class="container" style="max-width:600px; margin-top:40px;">
+  <h1 class="mb-4">🐾 Detalle de Mascota</h1>
 
-                <% if (!error) { %>
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= mensaje %></div>
+    <a href="/mascotas" class="btn btn-dark w-100">Volver a Mascotas</a>
+  <% } %>
 
+  <% if (!error) { %>
+    <form id="formEditar" data-id="<%= mascota.id %>">
 
-                    <form id="formEditar" data-id="<%= mascota.id %>">
-                        <input type="text" value="<%= mascota.nombre %>" class="form-control my-2" name="nombre"
-                            id="nombreInput">
-                        <input type="text" value="<%= mascota.descripcion %>" class="form-control my-2"
-                            name="descripcion" id="descripcionInput">
-                        <button class="btn btn-warning btn-sm w-100" type="submit">
-                            Editar
-                        </button>
-                        <hr>
-                        <button class="btn btn-danger btn-sm mt-4 float-end" type="button"  id="btnEliminar"
-                            data-id="<%= mascota.id %>">
-                            Eliminar
-                        </button>
-                    </form>
+      <div class="mb-3">
+        <label for="nombreInput" class="form-label fw-bold">Nombre</label>
+        <input
+          type="text"
+          class="form-control"
+          id="nombreInput"
+          name="nombre"
+          value="<%= mascota.nombre %>"
+          required minlength="2" maxlength="50">
+      </div>
 
+      <div class="mb-3">
+        <label for="descripcionInput" class="form-label fw-bold">
+          Descripción
+        </label>
+        <textarea
+          class="form-control"
+          id="descripcionInput"
+          name="descripcion"
+          rows="3"
+          maxlength="300"><%= mascota.descripcion %></textarea>
+      </div>
 
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="especieInput" class="form-label fw-bold">Especie</label>
+          <select class="form-select" id="especieInput" name="especie">
+            <option value="Perro"  <%= mascota.especie === 'Perro'  ? 'selected' : '' %>>🐶 Perro</option>
+            <option value="Gato"   <%= mascota.especie === 'Gato'   ? 'selected' : '' %>>🐱 Gato</option>
+            <option value="Conejo" <%= mascota.especie === 'Conejo' ? 'selected' : '' %>>🐰 Conejo</option>
+            <option value="Ave"    <%= mascota.especie === 'Ave'    ? 'selected' : '' %>>🐦 Ave</option>
+            <option value="Otro"   <%= mascota.especie === 'Otro'   ? 'selected' : '' %>>🐾 Otro</option>
+          </select>
+        </div>
 
+        <div class="col-md-4 mb-3">
+          <label for="edadInput" class="form-label fw-bold">Edad (años)</label>
+          <input
+            type="number"
+            class="form-control"
+            id="edadInput"
+            name="edad"
+            value="<%= mascota.edad %>"
+            min="0" max="30">
+        </div>
 
-                    <!-- <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Id</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Descripción</th>
-                                <th scope="col">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td scope="row">
-                                    <%= mascota.id %>
-                                </td>
-                                <td>
-                                    <%= mascota.nombre %>
-                                </td>
-                                <td>
-                                    <%= mascota.descripcion %>
-                                </td>
-                                <th>
-                                    <button type="button" class="btn btn-warning btn-sm"
-                                        id="btnModificar">Editar</button>
-                                    <button type="button" class="btn btn-danger btn-sm" id="btnEliminar"
-                                        data-id="<%= mascota.id %>">Eliminar</button>
-                                </th>
+        <div class="col-md-4 mb-3">
+          <label for="estadoInput" class="form-label fw-bold">Estado</label>
+          <select class="form-select" id="estadoInput" name="estado">
+            <option value="disponible" <%= mascota.estado === 'disponible' ? 'selected' : '' %>>
+              Disponible
+            </option>
+            <option value="adoptado" <%= mascota.estado === 'adoptado' ? 'selected' : '' %>>
+              Adoptado
+            </option>
+          </select>
+        </div>
+      </div>
 
+      <button class="btn btn-warning w-100" type="submit">
+        ✏ Guardar cambios
+      </button>
+      <hr>
+      <div class="d-flex gap-2 mt-2">
+        <a href="/mascotas" class="btn btn-outline-secondary w-100">
+          ← Volver
+        </a>
+        <button class="btn btn-danger w-100" type="button"
+                id="btnEliminar" data-id="<%= mascota.id %>">
+          🗑 Eliminar mascota
+        </button>
+      </div>
 
+    </form>
+  <% } %>
+</main>
 
+<%- include("partials/footer") %>
 
-                            </tr>
-                        </tbody>
-                    </table> -->
-                    <% } %>
+<script>
+  // ── Eliminar mascota ──────────────────────────────────
+  document.querySelector('#btnEliminar')
+    .addEventListener('click', async () => {
+      const id = document.querySelector('#btnEliminar').dataset.id;
+      const confirmar = confirm('¿Eliminar esta mascota? Esta acción no se puede deshacer.');
+      if (!confirmar) return;
 
-    </div>
+      try {
+        const data = await fetch(`/mascotas/${id}`, { method: 'DELETE' });
+        const res = await data.json();
+        if (res.estado === 'true') {
+          window.location.href = '/mascotas';
+        } else {
+          alert('No se pudo eliminar. Intenta nuevamente.');
+        }
+      } catch (error) {
+        alert('Error de conexión.');
+      }
+    });
 
+  // ── Editar mascota ────────────────────────────────────
+  document.querySelector('#formEditar')
+    .addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.querySelector('#formEditar').dataset.id;
 
+      const body = {
+        nombre:      document.querySelector('#nombreInput').value,
+        descripcion: document.querySelector('#descripcionInput').value,
+        especie:     document.querySelector('#especieInput').value,
+        edad:        document.querySelector('#edadInput').value,
+        estado:      document.querySelector('#estadoInput').value,
+      };
 
-
-
-    <%- include("partials/footer") %>
-
-        <script>
-            const btnEliminar = document.querySelector('#btnEliminar')
-            btnEliminar.addEventListener('click', async () => {
-                //console.log('Botón eliminar funcionando!')
-                const id = btnEliminar.dataset.id
-
-                try {
-                    const data = await fetch(`/mascotas/${id}`, {
-                        method: 'delete'
-                    })
-                    const res = await data.json()
-
-                    if (res.estado) {
-                        window.location.href = '/mascotas'
-                    } else {
-                        console.log(res)
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            })
-
-
-            const formEditar = document.querySelector('#formEditar')
-            formEditar.addEventListener('submit', async (e) => {
-                e.preventDefault()
-                const nombre = document.querySelector('#nombreInput').value
-                const descripcion = document.querySelector('#descripcionInput').value
-                const id = formEditar.dataset.id
-                //console.log(nombre, descripcion , id)
-
-                try {
-                    const data = await fetch(`/mascotas/${id}`, {
-                        method: 'put',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({nombre, descripcion})
-                    })
-                    const res = await data.json()
- 
-                    if (res.estado) {
-                        window.location.href = '/mascotas'
-                    } else {
-                        console.log(res)
-                    }
-                } catch (error) {
-                    
-                }
-
-
-            })
-
-
-
-        </script>
+      try {
+        const data = await fetch(`/mascotas/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const res = await data.json();
+        if (res.estado === 'true') {
+          alert('✅ Mascota actualizada correctamente.');
+          window.location.href = '/mascotas';
+        } else {
+          alert('No se pudo actualizar. Intenta nuevamente.');
+        }
+      } catch (error) {
+        alert('Error de conexión.');
+      }
+    });
+</script>
