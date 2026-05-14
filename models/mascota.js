@@ -20,10 +20,15 @@ const mascotaSchema = new mongoose.Schema(
       enum: ["Perro", "Gato", "Conejo", "Ave", "Otro"],
       default: "Otro",
     },
+    sexo: {
+      type: String,
+      enum: ["Macho", "Hembra", "N/S"],
+      default: "N/S",
+    },
     edad: {
       type: Number,
       min: 0,
-      max: 30,
+      max: 100,
     },
     estado: {
       type: String,

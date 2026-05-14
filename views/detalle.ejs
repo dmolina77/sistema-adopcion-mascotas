@@ -35,7 +35,7 @@
       </div>
 
       <div class="row">
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <label for="especieInput" class="form-label fw-bold">Especie</label>
           <select class="form-select" id="especieInput" name="especie">
             <option value="Perro"  <%= mascota.especie === 'Perro'  ? 'selected' : '' %>>🐶 Perro</option>
@@ -46,7 +46,16 @@
           </select>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
+          <label for="sexoInput" class="form-label fw-bold">Sexo</label>
+          <select class="form-select" id="sexoInput" name="sexo">
+            <option value="Macho"  <%= mascota.sexo === 'Macho'  ? 'selected' : '' %>>Macho</option>
+            <option value="Hembra"   <%= mascota.sexo === 'Hembra'   ? 'selected' : '' %>>Hembra</option>
+            <option value="Otro"   <%= mascota.sexo === 'Otro'   ? 'selected' : '' %>>N/S</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 mb-3">
           <label for="edadInput" class="form-label fw-bold">Edad (años)</label>
           <input
             type="number"
@@ -54,10 +63,10 @@
             id="edadInput"
             name="edad"
             value="<%= mascota.edad %>"
-            min="0" max="30">
+            min="0" max="100">
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <label for="estadoInput" class="form-label fw-bold">Estado</label>
           <select class="form-select" id="estadoInput" name="estado">
             <option value="disponible" <%= mascota.estado === 'disponible' ? 'selected' : '' %>>
@@ -79,7 +88,7 @@
           ← Volver
         </a>
         <button class="btn btn-danger w-100" type="button"
-                id="btnEliminar" data-id="<%= mascota.id %>">
+                id="btnEliminar" data-id="<%= mascota.id %>" onclick="eliminarMascota('<%= mascota.id %>')">
           🗑 Eliminar mascota
         </button>
       </div>
@@ -91,27 +100,8 @@
 <%- include("partials/footer") %>
 
 <script>
-  // ── Eliminar mascota ──────────────────────────────────
-  document.querySelector('#btnEliminar')
-    .addEventListener('click', async () => {
-      const id = document.querySelector('#btnEliminar').dataset.id;
-      const confirmar = confirm('¿Eliminar esta mascota? Esta acción no se puede deshacer.');
-      if (!confirmar) return;
 
-      try {
-        const data = await fetch(`/mascotas/${id}`, { method: 'DELETE' });
-        const res = await data.json();
-        if (res.estado === 'true') {
-          window.location.href = '/mascotas';
-        } else {
-          alert('No se pudo eliminar. Intenta nuevamente.');
-        }
-      } catch (error) {
-        alert('Error de conexión.');
-      }
-    });
-
-  // ── Editar mascota ────────────────────────────────────
+  // editar mascota
   document.querySelector('#formEditar')
     .addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -143,3 +133,4 @@
       }
     });
 </script>
+<script src="/js/eliminarMascota.js"></script>

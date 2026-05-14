@@ -38,7 +38,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label for="especie" class="form-label fw-bold">Especie</label>
         <select class="form-select" id="especie" name="especie">
           <option value="Perro">🐶 Perro</option>
@@ -48,8 +48,16 @@
           <option value="Otro" selected>🐾 Otro</option>
         </select>
       </div>
+      <div class="col-md-4 mb-3">
+        <label for="sexo" class="form-label fw-bold">Sexo</label>
+        <select class="form-select" id="sexo" name="sexo">
+          <option value="Macho">Macho</option>
+          <option value="Hembra">Hembra</option>
+          <option value="N/S" selected>N/S</option>
+        </select>
+      </div>
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label for="edad" class="form-label fw-bold">Edad (años)</label>
         <input
           type="number"
@@ -57,7 +65,7 @@
           id="edad"
           name="edad"
           min="0"
-          max="30"
+          max="100"
           placeholder="Ej: 3">
       </div>
     </div>

@@ -44,7 +44,7 @@ router.get("/crear", (req, res) => {
 
 // POST /mascotas - crear nueva
 router.post("/", async (req, res) => {
-  const { nombre, descripcion, especie, edad } = req.body;
+  const { nombre, descripcion, especie, sexo, edad } = req.body;
   if (!nombre || nombre.trim().length < 2) {
     return res.render("crear", {
       error: "El nombre debe tener al menos 2 caracteres.",
@@ -55,6 +55,7 @@ router.post("/", async (req, res) => {
       nombre: nombre.trim(),
       descripcion: descripcion ? descripcion.trim() : "",
       especie: especie || "Otro",
+      sexo: sexo || "N/S",
       edad: edad || 0,
       creadoPor: req.session.usuario.id,
     });
@@ -105,12 +106,13 @@ router.put("/:id", async (req, res) => {
   if (!esIdValido(req.params.id)) {
     return res.json({ estado: "false", mensaje: "ID no válido" });
   }
-  const { nombre, descripcion, especie, edad, estado } = req.body;
+  const { nombre, descripcion, especie, sexo, edad, estado } = req.body;
   try {
     await Mascota.findByIdAndUpdate(req.params.id, {
       nombre,
       descripcion,
       especie,
+      sexo,
       edad,
       estado,
     });
