@@ -12,6 +12,72 @@ function esIdValido(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+const axios = require("axios");
+
+// GET /mascotas/razas - consumir API externa
+router.get("/razas", async (req, res) => {
+  const letraFiltro = req.query.letra || "a";
+
+  try {
+    // Llamada 1: obtener lista de todas las razas
+    const listaResp = await axios.get("https://dog.ceo/api/breeds/list/all");
+
+    // La API devuelve un objeto { raza: [sub-razas] }
+    // Convertirlo a array y filtrar por letra
+    const todasLasRazas = Object.keys(listaResp.data.message);
+
+    const razasFiltradas = todasLasRazas.filter((raza) =>
+      raza.startsWith(letraFiltro.toLowerCase()),
+    );
+
+    // Si no hay razas con esa letra, usar 'a'
+    const razasAMostrar =
+      razasFiltradas.length > 0
+        ? razasFiltradas.slice(0, 12) // máximo 12
+        : todasLasRazas.slice(0, 12);
+
+    // Llamada 2: obtener una imagen por cada raza
+    const razasConImagen = await Promise.all(
+      razasAMostrar.map(async (nombreRaza) => {
+        try {
+          const imgResp = await axios.get(
+            `https://dog.ceo/api/breed/${nombreRaza}/images/random`,
+          );
+          return {
+            nombre: nombreRaza,
+            imagen: imgResp.data.message, // URL directa, siempre funciona
+          };
+        } catch {
+          return {
+            nombre: nombreRaza,
+            imagen: null,
+          };
+        }
+      }),
+    );
+
+    // Obtener letras disponibles para el filtro
+    const letrasDisponibles = [
+      ...new Set(todasLasRazas.map((r) => r[0])),
+    ].sort();
+
+    res.render("razas", {
+      razas: razasConImagen,
+      error: null,
+      letraActual: letraFiltro,
+      letrasDisponibles,
+    });
+  } catch (error) {
+    console.error("Error al consumir API:", error.message);
+    res.render("razas", {
+      razas: [],
+      error: "No se pudo conectar con la API. Intenta más tarde.",
+      letraActual: "a",
+      letrasDisponibles: [],
+    });
+  }
+});
+
 // GET /mascotas - listar todas
 router.get("/", async (req, res) => {
   try {

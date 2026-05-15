@@ -1,0 +1,208 @@
+<%- include('partials/header', {tituloWeb: 'Razas de Perros'}) %>
+
+<main class="container my-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1>🐕 Razas de Perros</h1>
+    <a href="/mascotas" class="btn btn-outline-secondary btn-sm">
+      ← Volver
+    </a>
+  </div>
+
+  <p class="text-muted mb-4">
+    Imágenes en tiempo real desde <strong>Dog CEO API</strong> ·
+    Mostrando razas con letra
+    <strong><%= letraActual.toUpperCase() %></strong>
+  </p>
+
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <!-- Filtro por letra -->
+  <div class="mb-4 d-flex flex-wrap gap-1">
+    <% letrasDisponibles.forEach(letra => { %>
+      <a href="/mascotas/razas?letra=<%= letra %>"
+         class="btn btn-sm <%= letra === letraActual
+           ? 'btn-primary'
+           : 'btn-outline-primary' %>">
+        <%= letra.toUpperCase() %>
+      </a>
+    <% }) %>
+  </div>
+
+  <!-- Grid de tarjetas -->
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+
+    <% if (razas.length === 0 && !error) { %>
+      <div class="col-12">
+        <div class="alert alert-info">
+          No hay razas disponibles para esta letra.
+        </div>
+      </div>
+    <% } %>
+
+    <% razas.forEach(raza => { %>
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+
+          <% if (raza.imagen) { %>
+            <img
+              src="<%= raza.imagen %>"
+              class="card-img-top"
+              alt="Foto de raza <%= raza.nombre %>"
+              style="height: 210px; object-fit: cover;"
+              loading="lazy">
+          <% } else { %>
+            <div class="d-flex align-items-center
+                        justify-content-center bg-light"
+                 style="height: 210px;">
+              <span style="font-size: 3rem;">🐶</span>
+            </div>
+          <% } %>
+
+          <div class="card-body">
+            <h5 class="card-title text-capitalize">
+              <%= raza.nombre %>
+            </h5>
+          </div>
+
+          <!-- Botón que abre el modal -->
+          <div class="card-footer">
+            <button
+              class="btn btn-outline-info btn-sm w-100 btn-ver-fotos"
+              data-raza="<%= raza.nombre %>"
+              data-bs-toggle="modal"
+              data-bs-target="#modalFotos">
+              📷 Ver más fotos
+            </button>
+          </div>
+
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+
+</main>
+
+<!-- ── Modal de fotos ─────────────────────────────────── -->
+<div class="modal fade" id="modalFotos" tabindex="-1"
+     aria-labelledby="modalFotosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title text-capitalize" id="modalFotosLabel">
+          Fotos de la raza
+        </h5>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Spinner mientras cargan las fotos -->
+        <div id="modalSpinner" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2 text-muted">Cargando fotos...</p>
+        </div>
+
+        <!-- Contenedor de fotos -->
+        <div id="modalFotosGrid"
+             class="row row-cols-2 g-2"
+             style="display:none !important;">
+        </div>
+
+        <!-- Mensaje de error -->
+        <div id="modalError"
+             class="alert alert-danger"
+             style="display:none;">
+          No se pudieron cargar las fotos. Intenta nuevamente.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Script del modal ───────────────────────────────── -->
+<script>
+// Esperar a que todo el DOM y Bootstrap estén listos
+window.addEventListener('load', function () {
+
+  // Verificar que Bootstrap está disponible
+  if (typeof bootstrap === 'undefined') {
+    console.error('Bootstrap no está cargado');
+    return;
+  }
+
+  // Obtener instancia del modal
+  const modalElement = document.getElementById('modalFotos');
+  const modal = new bootstrap.Modal(modalElement);
+
+  document.querySelectorAll('.btn-ver-fotos').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const raza = this.dataset.raza;
+
+      // Actualizar título
+      document.getElementById('modalFotosLabel').textContent =
+        'Fotos de: ' + raza.charAt(0).toUpperCase() + raza.slice(1);
+
+      // Resetear estado del modal
+      document.getElementById('modalSpinner').style.display = 'block';
+      document.getElementById('modalFotosGrid').style.display = 'none';
+      document.getElementById('modalError').style.display = 'none';
+      document.getElementById('modalFotosGrid').innerHTML = '';
+
+      // Abrir modal manualmente
+      modal.show();
+
+      try {
+        const respuesta = await fetch(
+          `https://dog.ceo/api/breed/${raza}/images/random/4`
+        );
+        const data = await respuesta.json();
+
+        if (data.status !== 'success' || !data.message.length) {
+          throw new Error('Sin fotos');
+        }
+
+        const grid = document.getElementById('modalFotosGrid');
+        data.message.forEach(url => {
+          const col = document.createElement('div');
+          col.className = 'col';
+          col.innerHTML = `
+            <img src="${url}"
+                 alt="Foto de ${raza}"
+                 class="img-fluid rounded"
+                 style="width:100%; height:200px; object-fit:cover;">
+          `;
+          grid.appendChild(col);
+        });
+
+        document.getElementById('modalSpinner').style.display = 'none';
+        document.getElementById('modalFotosGrid').style.display = 'flex';
+
+      } catch (error) {
+        console.error('Error cargando fotos:', error);
+        document.getElementById('modalSpinner').style.display = 'none';
+        document.getElementById('modalError').style.display = 'block';
+      }
+    });
+  });
+
+});
+</script>
+
+<%- include('partials/footer') %>
