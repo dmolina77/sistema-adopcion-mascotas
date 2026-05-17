@@ -16,21 +16,15 @@ if (process.env.NODE_ENV === "production") {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
-          styleSrc: [
-            "'self'",
-            "'unsafe-inline'", // Bootstrap necesita estilos inline
-          ],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: [
             "'self'",
             "data:",
-            "https://images.dog.ceo", // imágenes de Dog CEO API
+            "https://images.dog.ceo",
             "https://*.dog.ceo",
           ],
-          connectSrc: [
-            "'self'",
-            "https://dog.ceo", // fetch() del modal al API
-          ],
+          connectSrc: ["'self'", "https://dog.ceo"],
           fontSrc: ["'self'"],
           objectSrc: ["'none'"],
           upgradeInsecureRequests: [],
