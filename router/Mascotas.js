@@ -82,7 +82,10 @@ router.get("/razas", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const mascotas = await Mascota.find().sort({ createdAt: -1 });
-    res.render("mascotas", { arrayMascotas: mascotas });
+    res.render("mascotas", {
+      arrayMascotas: mascotas,
+      query: req.query,
+    });
   } catch (error) {
     console.error(error.message);
     res.render("mascotas", { arrayMascotas: [] });
@@ -125,7 +128,7 @@ router.post("/", async (req, res) => {
       edad: edad || 0,
       creadoPor: req.session.usuario.id,
     });
-    res.redirect("/mascotas");
+    res.redirect("/mascotas?exito=creado");
   } catch (error) {
     console.error(error.message);
     res.render("crear", { error: "Error al crear. Intenta nuevamente." });
