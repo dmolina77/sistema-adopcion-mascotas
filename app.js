@@ -11,7 +11,33 @@ const port = process.env.PORT || 3000;
 
 //helmet, cabeceras http, solo en producción
 if (process.env.NODE_ENV === "production") {
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'", // Bootstrap necesita estilos inline
+          ],
+          imgSrc: [
+            "'self'",
+            "data:",
+            "https://images.dog.ceo", // imágenes de Dog CEO API
+            "https://*.dog.ceo",
+          ],
+          connectSrc: [
+            "'self'",
+            "https://dog.ceo", // fetch() del modal al API
+          ],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: [],
+        },
+      },
+    }),
+  );
 } else {
   app.use(
     helmet({

@@ -97,40 +97,7 @@
   <% } %>
 </main>
 
-<%- include("partials/footer") %>
-
-<script>
-
-  // editar mascota
-  document.querySelector('#formEditar')
-    .addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.querySelector('#formEditar').dataset.id;
-
-      const body = {
-        nombre:      document.querySelector('#nombreInput').value,
-        descripcion: document.querySelector('#descripcionInput').value,
-        especie:     document.querySelector('#especieInput').value,
-        edad:        document.querySelector('#edadInput').value,
-        estado:      document.querySelector('#estadoInput').value,
-      };
-
-      try {
-        const data = await fetch(`/mascotas/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        const res = await data.json();
-        if (res.estado === 'true') {
-          alert('✅ Mascota actualizada correctamente.');
-          window.location.href = '/mascotas';
-        } else {
-          alert('No se pudo actualizar. Intenta nuevamente.');
-        }
-      } catch (error) {
-        alert('Error de conexión.');
-      }
-    });
-</script>
 <script src="/js/eliminarMascota.js"></script>
+<script src="/js/editarMascota.js"></script>
+
+<%- include("partials/footer") %>
